@@ -1,4 +1,3 @@
-
 #include "robot.hpp"
 #include "console.hpp"
 #include "commands.hpp"
@@ -29,9 +28,6 @@
 #define DC_CAL_CH2(x)   (((x)<<5) & 0x020)
 #define TC_OFF(x)       (((x)<<6) & 0x040)
 
-
-
-
 Serial pc(USBTX, USBRX);
 LocalFileSystem local("local");
 SPI spi(p5, p6, p7);	//  mosi, miso, sclk - connected to fpga
@@ -41,9 +37,8 @@ DigitalOut ledOne(LED1,1);
 DigitalOut ledTwo(LED2,0);
 DigitalOut drv_configured(LED3,0);
 
-DigitalOut n_cs(p10,1);
+DigitalOut n_cs(p8,1);
 DigitalOut gate_en(p15,0);
-
 
 /*
  * some forward declarations to make the code easier to read
@@ -69,7 +64,7 @@ int main(void)
 	//initRadioThread();
 	//initConsoleRoutine();
 
-    fpgaInit();
+    //fpgaInit();
     DRV8303Init();
 
 	uint16_t data[3];
