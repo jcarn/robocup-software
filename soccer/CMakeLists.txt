@@ -164,8 +164,8 @@ set(SOCCER_TEST_SRC
     "BatteryProfileTest.cpp"
     "motion/TrapezoidalMotionTest.cpp"
     "planning/PathTest.cpp"
-    "planning/EscapeObstaclesPathPlannerTest.cpp"
-    "planning/TargetVelPathPlannerTest.cpp"
+    # "planning/EscapeObstaclesPathPlannerTest.cpp"
+    # "planning/TargetVelPathPlannerTest.cpp"
     "TestMain.cpp"
     "WindowEvaluatorTest.cpp"
 )
