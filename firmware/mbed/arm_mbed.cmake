@@ -191,6 +191,12 @@ if(${MBED_USE_USB} STREQUAL "true")
   set(PY_LIBS ${PY_LIBS} --usb --usb_host)
 endif()
 
+if (${MBED_USE_RPC} STREQUAL "true")
+  include_directories("${MBED_RPC_PATH}")
+
+  # set(PY_LIBS ${PY_LIBS} --rpc)
+endif()
+
 # add dsp
 if(${MBED_USE_DSP} STREQUAL "true")
   #dsp
@@ -211,7 +217,7 @@ include_directories(${MBED_PATH})
 
 
 # set variables to each of the accessory library cmake project files
-set(RPC_MBED_LIB        ${CMAKE_CURRENT_LIST_DIR}/mbed-rpc.cmake      )
+# set(RPC_MBED_LIB        ${CMAKE_CURRENT_LIST_DIR}/mbed-rpc.cmake      )
 set(MCP23017_MBED_LIB   ${CMAKE_CURRENT_LIST_DIR}/mcp23017.cmake      )
 set(BURSTSPI_MBED_LIB   ${CMAKE_CURRENT_LIST_DIR}/burst-spi.cmake     )
 set(SWSPI_MBED_LIB      ${CMAKE_CURRENT_LIST_DIR}/software-spi.cmake  )
@@ -222,7 +228,7 @@ set(PIXARRY_MBED_LIB    ${CMAKE_CURRENT_LIST_DIR}/pixelarray.cmake    )
 
 # create a list of which accessory libraries we want to download and add to the common2015 library
 set(MBED_ASSEC_LIBS
-  ${RPC_MBED_LIB}
+  # ${RPC_MBED_LIB}
   # ${MCP23017_MBED_LIB}
   ${BURSTSPI_MBED_LIB}
   # ${SWSPI_MBED_LIB}
