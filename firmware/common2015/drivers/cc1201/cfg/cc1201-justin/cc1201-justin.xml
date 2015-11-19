@@ -130,7 +130,7 @@
         </Register>
         <Register>
             <Name>MODCFG_DEV_E</Name>
-            <Value>0x2d</Value>
+            <Value>0x0d</Value>
         </Register>
         <Register>
             <Name>MODEM_STATUS1</Name>
