@@ -9,7 +9,7 @@
  * 		-should be an RF studio header export
  * 		-*ALL* registers must be exported
  */
-#include "cc1101-compatible/registers.h"
+#include "cc1201-justin/registers.h"
 
 #ifndef SMARTRF_RADIO_CC1201
 #error "A valid Smart RF register configuration file was not loaded."
