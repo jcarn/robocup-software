@@ -157,6 +157,10 @@
             <Value>0x20</Value>
         </Register>
         <Register>
+            <Name>PKT_CFG1</Name>
+            <Value>0x43</Value>
+        </Register>
+        <Register>
             <Name>PKT_CFG2</Name>
             <Value>0x00</Value>
         </Register>
@@ -272,7 +276,7 @@
         <Property name="m_chkInfinite" role="44">2</Property>
         <Property name="m_chkInfiniteEsy" role="44">2</Property>
         <Property name="m_cmbViewFormat" role="46">0</Property>
-        <Property name="m_chkSeqNbrIncluded" role="44">2</Property>
+        <Property name="m_chkSeqNbrIncluded" role="44">0</Property>
         <Property name="m_edtDumpFile" role="42"></Property>
         <Property name="m_chkAdvanced" role="44">0</Property>
         <Property name="m_chk802154gMode" role="44">0</Property>
