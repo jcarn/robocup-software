@@ -31,7 +31,7 @@
 #define SMARTRF_SETTING_CHAN_BW            0x41
 #define SMARTRF_SETTING_MDMCFG1            0x40
 #define SMARTRF_SETTING_MDMCFG0            0x0D
-#define SMARTRF_SETTING_SYMBOL_RATE2       0xB4
+#define SMARTRF_SETTING_SYMBOL_RATE2       0xC4
 #define SMARTRF_SETTING_SYMBOL_RATE1       0x7A
 #define SMARTRF_SETTING_SYMBOL_RATE0       0xE1
 #define SMARTRF_SETTING_AGC_REF            0x42
@@ -56,7 +56,7 @@
 #define SMARTRF_SETTING_RFEND_CFG1         0x0F
 #define SMARTRF_SETTING_RFEND_CFG0         0x00
 #define SMARTRF_SETTING_PA_CFG1            0x3F
-#define SMARTRF_SETTING_PA_CFG0            0x51
+#define SMARTRF_SETTING_PA_CFG0            0x50
 #define SMARTRF_SETTING_ASK_CFG            0x0F
 #define SMARTRF_SETTING_PKT_LEN            0xFF
 #define SMARTRF_SETTING_IF_MIX_CFG         0x1C
@@ -64,7 +64,7 @@
 #define SMARTRF_SETTING_TOC_CFG            0x0B
 #define SMARTRF_SETTING_MARC_SPARE         0x00
 #define SMARTRF_SETTING_ECG_CFG            0x00
-#define SMARTRF_SETTING_MDMCFG2            0x02
+#define SMARTRF_SETTING_MDMCFG2            0x00
 #define SMARTRF_SETTING_EXT_CTRL           0x01
 #define SMARTRF_SETTING_RCCAL_FINE         0x00
 #define SMARTRF_SETTING_RCCAL_COARSE       0x00
