@@ -37,16 +37,8 @@
             <Value>0x00</Value>
         </Register>
         <Register>
-            <Name>FREQ0</Name>
-            <Value>0x99</Value>
-        </Register>
-        <Register>
-            <Name>FREQ1</Name>
-            <Value>0x99</Value>
-        </Register>
-        <Register>
             <Name>FREQ2</Name>
-            <Value>0x5b</Value>
+            <Value>0x5c</Value>
         </Register>
         <Register>
             <Name>FREQOFF_CFG</Name>

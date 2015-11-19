@@ -71,9 +71,9 @@
 #define SMARTRF_SETTING_RCCAL_OFFSET       0x00
 #define SMARTRF_SETTING_FREQOFF1           0x00
 #define SMARTRF_SETTING_FREQOFF0           0x00
-#define SMARTRF_SETTING_FREQ2              0x5B
-#define SMARTRF_SETTING_FREQ1              0x99
-#define SMARTRF_SETTING_FREQ0              0x99
+#define SMARTRF_SETTING_FREQ2              0x5C
+#define SMARTRF_SETTING_FREQ1              0x00
+#define SMARTRF_SETTING_FREQ0              0x00
 #define SMARTRF_SETTING_IF_ADC2            0x02
 #define SMARTRF_SETTING_IF_ADC1            0xEE
 #define SMARTRF_SETTING_IF_ADC0            0x10
