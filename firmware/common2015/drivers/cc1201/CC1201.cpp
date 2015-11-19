@@ -3,7 +3,6 @@
 #include "CC1201Defines.hpp"
 #include "logger.hpp"
 
-CC1201::CC1201() : CommLink(){};
 
 CC1201::CC1201(PinName mosi, PinName miso, PinName sck, PinName cs,
                PinName intPin, int rssiOffset)

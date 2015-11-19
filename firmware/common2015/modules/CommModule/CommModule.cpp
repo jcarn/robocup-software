@@ -280,9 +280,10 @@ void CommModule::send(rtp::packet& packet) {
     }
 }
 
-void CommModule::receive(rtp::packet& packet) {
+void CommModule::receive(rtp::packet& packet) { 
     // [X] - 1 - Check to make sure a socket for the port exists
     if (_ports[packet.port].isOpen() && _ports[packet.port].RXCallback()) {
+        LOG(INIT, "getting packet from open port\n");
         // [X] - 1.1 - Allocate a block of memory for the data.
         // =================
         rtp::packet* p =

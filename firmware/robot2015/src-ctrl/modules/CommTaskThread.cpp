@@ -156,7 +156,7 @@ void Task_CommCtrl(void const* args) {
     }
 
     // Additional waiting can be used here if needed
-    Thread::signal_wait(COMMUNICATION_TASK_START_SIGNAL, osWaitForever);
+    // Thread::signal_wait(COMMUNICATION_TASK_START_SIGNAL, osWaitForever);
 
     // == everything below this line all the way until the start of the while
     // loop is test code ==
@@ -184,6 +184,7 @@ void Task_CommCtrl(void const* args) {
         // CC1201 *should* fall into IDLE after it sends the packet. It will
         // then calibrate right before entering the RX state strobed below.
         // radio_900.strobe(CC1201_STROBE_SRX);
+        radio.strobe(CC1201_STROBE_SRX);
     }
 
     osThreadTerminate(threadID);

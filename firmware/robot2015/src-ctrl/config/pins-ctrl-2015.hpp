@@ -15,10 +15,10 @@
 #define RJ_MPU_INT p8
 
 // This defines the I/O Expander's interrupt pin.
-#define RJ_IOEXP_INT p9
+#define RJ_IOEXP_INT p10
 
 // This defines the Radio Transceiver's interrupt pin.
-#define RJ_RADIO_INT p10
+#define RJ_RADIO_INT p9
 
 // This defines the FPGA's `PROG_B` pin.
 // 10k pull-up to 2.5V

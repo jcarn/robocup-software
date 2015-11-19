@@ -13,7 +13,7 @@
 
 #define SMARTRF_RADIO_CC1201
 #define SMARTRF_SETTING_IOCFG3             0x06
-#define SMARTRF_SETTING_IOCFG2             0x07
+#define SMARTRF_SETTING_IOCFG2             0x06
 #define SMARTRF_SETTING_IOCFG1             0x30
 #define SMARTRF_SETTING_IOCFG0             0x3C
 #define SMARTRF_SETTING_SYNC3              0xD3

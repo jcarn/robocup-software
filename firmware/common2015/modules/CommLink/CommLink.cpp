@@ -127,6 +127,8 @@ void CommLink::sendPacket(rtp::packet* p) { sendData(p->raw, p->total_size); }
 
 // Interrupt Service Routine - KEEP OPERATIONS TO ABOSOLUTE MINIMUM HERE AND IN
 // ANY OVERRIDEN BASE CLASS IMPLEMENTATIONS OF THIS CLASS METHOD
-void CommLink::ISR() { osSignalSet(_rxID, COMM_LINK_SIGNAL_RX_TRIGGER); }
+void CommLink::ISR() {
+    osSignalSet(_rxID, COMM_LINK_SIGNAL_RX_TRIGGER);
+}
 
 void CommLink::toggle_cs() { *_cs = !*_cs; }
