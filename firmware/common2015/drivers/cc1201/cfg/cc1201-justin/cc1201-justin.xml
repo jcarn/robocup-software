@@ -138,7 +138,7 @@
         </Register>
         <Register>
             <Name>MODCFG_DEV_E</Name>
-            <Value>0x0d</Value>
+            <Value>0x2d</Value>
         </Register>
         <Register>
             <Name>MODEM_STATUS1</Name>
@@ -178,15 +178,15 @@
         </Register>
         <Register>
             <Name>SYMBOL_RATE0</Name>
-            <Value>0x52</Value>
+            <Value>0xe1</Value>
         </Register>
         <Register>
             <Name>SYMBOL_RATE1</Name>
-            <Value>0xb8</Value>
+            <Value>0x7a</Value>
         </Register>
         <Register>
             <Name>SYMBOL_RATE2</Name>
-            <Value>0xbe</Value>
+            <Value>0xb4</Value>
         </Register>
         <Register>
             <Name>SYNC0</Name>
