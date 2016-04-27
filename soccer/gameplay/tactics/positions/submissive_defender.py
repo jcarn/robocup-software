@@ -42,12 +42,36 @@ class SubmissiveDefender(
                             lambda: not should_clear(), "done_clearing")
 
     ## Returns True if the defender should clear a ball
-    # Computes the ratio between how long it will take for the defender to
+    # TODO: Compute the ratio between how long it will take for the defender to
     # retrive the ball and how long it will take an opponent to retrieve
-    # the ball. If the ratio is high enough, it returns true and the defender
-    # tranistions to clearing the ball.
+    # the ball. FOR NOW: Ratio is only distanceIf the ratio is high enough,
+    # it returns true and the defender tranistions to clearing the ball.
     def should_clear(self):
         print("Implement me!")
+        #Define ratio
+        ratio = 2.0
+        #Find the most threatening bot, then get its distance and velocity
+        #Note: The maximum velocity is considered max velocity towards the ball
+        #Note: The most threatening bot is the one who will reach the ball first
+        closest_bot, closest_dist, highest_vel = None, float("inf"),
+            robocup.Point(0.0, 0.0)
+        for bot in main.their_robots():
+            if bot.visible:
+                #Detirmine nost threatening bot
+                current_vel = bot.vel.mag()*cos((bot.pos - main.ball().pos).angleBetween(bot.vel))
+            dist = (bot.pos - main.ball().pos).mag()
+            if dist < closest_dist:
+                closest_bot, closest_dist = bot, dist
+
+    if closest_bot == None:
+        return None
+    else:
+        #This seems unnecessary, but it is safe
+        if closest_bot == None:
+            return True
+        
+        #Get distance from our robot
+        #Compute and define, then return
         return False
 
     ## the line we should be on to block
@@ -120,7 +144,7 @@ class SubmissiveDefender(
     def on_enter_marking(self):
         move = skills.move.Move()
         self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
-        
+
     def on_enter_clearing(self):
         print("Implement me!")
         #Add relevant skills, some of this this might be bypassed with a tactic
