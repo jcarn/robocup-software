@@ -17,6 +17,7 @@ class SubmissiveDefender(
         ## gets between a particular opponent and the goal.  stays closer to the goal
         marking = 1
         # TODO: add clear state to get and kick a free ball
+        clearing = 2
 
     def __init__(self):
         super().__init__(continuous=True)
@@ -26,12 +27,28 @@ class SubmissiveDefender(
 
         self.block_line = None
 
-        self.add_state(SubmissiveDefender.State.marking,
-                       behavior.Behavior.State.running)
+        for state in SubmissiveDefender.State:
+            self.add_state(state, behavior.Behavior.State.running)
 
         self.add_transition(behavior.Behavior.State.start,
                             SubmissiveDefender.State.marking, lambda: True,
                             "immediately")
+
+        self.add_transition(SubmissiveDefender.State.marking,
+                            SubmissiveDefender.State.clearing,
+                            lambda: should_clear(), "clear ball")
+        self.add_transition(SubmissiveDefender.State.clearing,
+                            SubmissiveDefender.State.marking,
+                            lambda: not should_clear(), "done_clearing")
+
+    ## Returns True if the defender should clear a ball
+    # Computes the ratio between how long it will take for the defender to
+    # retrive the ball and how long it will take an opponent to retrieve
+    # the ball. If the ratio is high enough, it returns true and the defender
+    # tranistions to clearing the ball.
+    def should_clear(self):
+        print("Implement me!")
+        return False
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
@@ -103,6 +120,10 @@ class SubmissiveDefender(
     def on_enter_marking(self):
         move = skills.move.Move()
         self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
+        
+    def on_enter_clearing(self):
+        print("Implement me!")
+        #Add relevant skills, some of this this might be bypassed with a tactic
 
     def execute_running(self):
         self.robot.set_avoid_opponents(False)
@@ -143,11 +164,26 @@ class SubmissiveDefender(
         if self.robot != None and self.block_line != None:
             self.robot.face(self.block_line.get_pt(0))
 
+        #%ODO: REMOVE ME ONCE BALL CAN BE SUCCESSFULLY CLEARED
         if self.robot.has_ball():
             self.robot.kick(0.75)
 
+    def execute_clearing(self):
+        #Find Ball
+        #Move to Ball
+        #Pick up Ball?
+        #Clear ball by passing it to offense
+        #Auxiliarry: Draw stuff, don't break things
+        #end
+        print("Implement me!")
+
     def on_exit_marking(self):
         self.remove_subbehavior('move')
+
+    def on_exit_clearing(self):
+        print("Implement me!")
+        #Remove skills added earlier
+        #Auxilarry: Consider reporting success of clearing?
 
     def role_requirements(self):
         reqs = super().role_requirements()
