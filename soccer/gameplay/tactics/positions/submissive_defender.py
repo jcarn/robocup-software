@@ -6,7 +6,7 @@ import robocup
 import main
 from enum import Enum
 import math
-
+import evaluation.motion
 
 ## Defender behavior meant to be coordinated in a defense tactic
 # The regular defender does a lot of calculations and figures out where it should be
@@ -41,38 +41,24 @@ class SubmissiveDefender(
                             SubmissiveDefender.State.marking,
                             lambda: not should_clear(), "done_clearing")
 
-    ## Returns True if the defender should clear a ball
-    # TODO: Compute the ratio between how long it will take for the defender to
-    # retrive the ball and how long it will take an opponent to retrieve
-    # the ball. FOR NOW: Ratio is only distanceIf the ratio is high enough,
-    # it returns true and the defender tranistions to clearing the ball.
+    ## Returns True if the defender should clear a ball. It detirmines this by
+    # evaluating the ratio between the estimated time it takes an opponent to reach
+    # the ball and the estimated time it takes our robot to reach the ball. If the
+    # ratio is above some threshold, the robot should clear the ball. The threshold
+    #ratio is completely arbitrary and requires tuning.
     def should_clear(self):
         print("Implement me!")
         #Define ratio
-        ratio = 2.0
-        #Find the most threatening bot, then get its distance and velocity
-        #Note: The maximum velocity is considered max velocity towards the ball
-        #Note: The most threatening bot is the one who will reach the ball first
-        closest_bot, closest_dist, highest_vel = None, float("inf"),
-            robocup.Point(0.0, 0.0)
+        threshold_ratio = 2.0
+        #Find the most threatening bot and its min time to ball
+        threat_bot, threat_time = None, float("inf")
         for bot in main.their_robots():
             if bot.visible:
-                #Detirmine nost threatening bot
-                current_vel = bot.vel.mag()*cos((bot.pos - main.ball().pos).angleBetween(bot.vel))
-            dist = (bot.pos - main.ball().pos).mag()
-            if dist < closest_dist:
-                closest_bot, closest_dist = bot, dist
-
-    if closest_bot == None:
-        return None
-    else:
-        #This seems unnecessary, but it is safe
-        if closest_bot == None:
-            return True
-        
-        #Get distance from our robot
-        #Compute and define, then return
-        return False
+                bot_time = evaluation.motion.timeToBall(bot)
+                if bot_time < threat_time:
+                    threat_time, threat_bot = bot_time, bot
+        #If the 
+        return True if bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
