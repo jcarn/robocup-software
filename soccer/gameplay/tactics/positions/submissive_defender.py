@@ -17,7 +17,8 @@ class SubmissiveDefender(
         ## gets between a particular opponent and the goal.  stays closer to the goal
         marking = 1
         # TODO: add clear state to get and kick a free ball
-        clearing = 2
+        retrieving = 2
+        clearing = 3
 
     def __init__(self):
         super().__init__(continuous=True)
@@ -34,19 +35,17 @@ class SubmissiveDefender(
                             SubmissiveDefender.State.marking, lambda: True,
                             "immediately")
 
-        self.add_transition(SubmissiveDefender.State.marking,
-                            SubmissiveDefender.State.clearing,
-                            lambda: should_clear(), "clear ball")
-        self.add_transition(SubmissiveDefender.State.clearing,
-                            SubmissiveDefender.State.marking,
-                            lambda: not should_clear(), "done_clearing")
+        self.add_transition(SubmissiveDefender.State.marking, SubmissiveDefender.State.retrieving, lambda: should_retrieve(), "retrieve")
+        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.clearing, lambda: self.subbehavior_with_name("retrieving").state == behavior.Behavior.State.completed, "clear")
+        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.marking, lambda: self.subbehavior_with_name("retrieving").state == behavior.Behavior.State.failed, "failed_retrieve")
+        self.add_transition(SubmissiveDefender.State.clearing, SubmissiveDefender.State.marking, lambda: subbehavior_with_name("clearing").state == behavior.Behavior.State.completed, "cleared")
 
     ## Returns True if the defender should clear a ball. It detirmines this by
     # evaluating the ratio between the estimated time it takes an opponent to reach
     # the ball and the estimated time it takes our robot to reach the ball. If the
     # ratio is above some threshold, the robot should clear the ball. The threshold
     #ratio is completely arbitrary and requires tuning.
-    def should_clear(self):
+    def should_retrieve(self):
         print("Implement me!")
         #Define ratio
         threshold_ratio = 2.0
@@ -57,8 +56,8 @@ class SubmissiveDefender(
                 bot_time = evaluation.motion.timeToBall(bot)
                 if bot_time < threat_time:
                     threat_time, threat_bot = bot_time, bot
-        #If the 
-        return True if bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
+        #Evaluates the ratio and detirmines if we have enough time to clear
+        return True if not threat_bot bot_time == None and bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
@@ -131,9 +130,10 @@ class SubmissiveDefender(
         move = skills.move.Move()
         self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
 
-    def on_enter_clearing(self):
+    def on_enter_retrieving(self):
         print("Implement me!")
         #Add relevant skills, some of this this might be bypassed with a tactic
+        self.add_subbehavior(skills.capture.Capture(), 'capture', required = True)
 
     def execute_running(self):
         self.robot.set_avoid_opponents(False)
@@ -173,10 +173,6 @@ class SubmissiveDefender(
         # make the defender face the threat it's defending against
         if self.robot != None and self.block_line != None:
             self.robot.face(self.block_line.get_pt(0))
-
-        #%ODO: REMOVE ME ONCE BALL CAN BE SUCCESSFULLY CLEARED
-        if self.robot.has_ball():
-            self.robot.kick(0.75)
 
     def execute_clearing(self):
         #Find Ball
