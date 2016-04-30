@@ -17,6 +17,7 @@ using namespace boost::python;
 #include <Geometry2d/Point.hpp>
 #include <Geometry2d/Polygon.hpp>
 #include <Geometry2d/Rect.hpp>
+#include <Geometry2d/Line.hpp>
 #include <protobuf/LogFrame.pb.h>
 #include <Robot.hpp>
 #include <SystemState.hpp>
@@ -124,6 +125,10 @@ void OurRobot_set_avoid_teammate_radius(OurRobot* self, unsigned shellID,
 
 void OurRobot_set_max_angle_speed(OurRobot* self, float maxAngleSpeed) {
     self->rotationConstraints().maxSpeed = maxAngleSpeed;
+}
+
+void OurRobot_set_max_speed(OurRobot* self, float maxSpeed) {
+    self->motionConstraints().maxSpeed = maxSpeed;
 }
 
 void OurRobot_approach_opponent(OurRobot* self, unsigned shell_id,
@@ -614,6 +619,7 @@ BOOST_PYTHON_MODULE(robocup) {
         .def("face", &OurRobot::face)
         .def("pivot", &OurRobot::pivot)
         .def("set_max_angle_speed", OurRobot_set_max_angle_speed)
+        .def("set_max_speed", OurRobot_set_max_speed)
         .def("set_avoid_ball_radius", &OurRobot_set_avoid_ball_radius)
         .def("shield_from_teammates", &OurRobot::shieldFromTeammates)
         .def("set_avoid_teammate_radius", OurRobot_set_avoid_teammate_radius)
@@ -707,10 +713,15 @@ BOOST_PYTHON_MODULE(robocup) {
         .add_property("TheirGoalSegment", &Field_Dimensions::TheirGoalSegment)
         .add_property("OurHalf", &Field_Dimensions::OurHalf)
         .add_property("TheirHalf", &Field_Dimensions::TheirHalf)
+        .add_property("FieldRect", &Field_Dimensions::FieldRect)
+        .add_property("FieldBorders", &Field_Dimensions::FieldBorders)
         .def_readonly("SingleFieldDimensions",
                       &Field_Dimensions::Single_Field_Dimensions)
         .def_readonly("DoubleFieldDimensions",
                       &Field_Dimensions::Double_Field_Dimensions);
+
+    class_<std::vector<Geometry2d::Line>>("vector_Line")
+        .def(vector_indexing_suite<std::vector<Geometry2d::Line>>());
 
     class_<Window>("Window")
         .def_readwrite("a0", &Window::a0)
@@ -754,13 +765,18 @@ BOOST_PYTHON_MODULE(robocup) {
     class_<ConfigBool, ConfigBool*, bases<ConfigItem>>("ConfigBool", no_init)
         .add_property("value", &ConfigBool::value, &ConfigBool::setValue)
         .def("__str__", &ConfigBool::toString);
+    register_ptr_to_python<ConfigBool*>();
+
     class_<ConfigDouble, ConfigDouble*, bases<ConfigItem>>("ConfigDouble",
                                                            no_init)
         .add_property("value", &ConfigDouble::value, &ConfigDouble::setValue)
         .def("__str__", &ConfigDouble::toString);
+    register_ptr_to_python<ConfigDouble*>();
+
     class_<ConfigInt, ConfigInt*, bases<ConfigItem>>("ConfigInt", no_init)
         .add_property("value", &ConfigInt::value, &ConfigInt::setValue)
         .def("__str__", &ConfigInt::toString);
+    register_ptr_to_python<ConfigInt*>();
 
     class_<MotionConstraints>("MotionConstraints")
         .def_readonly("MaxRobotSpeed", &MotionConstraints::_max_speed)
