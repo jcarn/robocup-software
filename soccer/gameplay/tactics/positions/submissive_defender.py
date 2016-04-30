@@ -1,6 +1,8 @@
 import single_robot_composite_behavior
 import behavior
 import skills.move
+import skills.capture
+import skills.punt_kick
 import constants
 import robocup
 import main
@@ -35,20 +37,24 @@ class SubmissiveDefender(
                             SubmissiveDefender.State.marking, lambda: True,
                             "immediately")
 
+        # Robot is marking by default. If the situation dictates that the ball
+        # needs cleared, the robot retrieves the ball. If the robot retrieves
+        # the ball, it then clears it and resumes marking. Otherwise, it resumes
+        # marking without clearing. As it stands, retrieving and clearing don't
+        # need to be seperate, but there could be utility in knowing and reacting
+        # to the success of the retrieval.
         self.add_transition(SubmissiveDefender.State.marking, SubmissiveDefender.State.retrieving, lambda: should_retrieve(), "retrieve")
-        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.clearing, lambda: self.subbehavior_with_name("retrieving").state == behavior.Behavior.State.completed, "clear")
-        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.marking, lambda: self.subbehavior_with_name("retrieving").state == behavior.Behavior.State.failed, "failed_retrieve")
-        self.add_transition(SubmissiveDefender.State.clearing, SubmissiveDefender.State.marking, lambda: subbehavior_with_name("clearing").state == behavior.Behavior.State.completed, "cleared")
+        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.clearing, lambda: self.robot.has_ball(), "retrieved-clearing")
+        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.marking, lambda: not should_retrieve(), "failed_retrieve")
+        self.add_transition(SubmissiveDefender.State.clearing, SubmissiveDefender.State.marking, lambda: not self.robot.has_ball(), "cleared")
 
     ## Returns True if the defender should clear a ball. It detirmines this by
     # evaluating the ratio between the estimated time it takes an opponent to reach
     # the ball and the estimated time it takes our robot to reach the ball. If the
     # ratio is above some threshold, the robot should clear the ball. The threshold
-    #ratio is completely arbitrary and requires tuning.
+    # ratio is completely arbitrary and requires tuning.
     def should_retrieve(self):
         print("Implement me!")
-        #Define ratio
-        threshold_ratio = 2.0
         #Find the most threatening bot and its min time to ball
         threat_bot, threat_time = None, float("inf")
         for bot in main.their_robots():
@@ -56,8 +62,15 @@ class SubmissiveDefender(
                 bot_time = evaluation.motion.timeToBall(bot)
                 if bot_time < threat_time:
                     threat_time, threat_bot = bot_time, bot
+
+        #Compressed code I was messing with, no idea if it works. Delete before commit.
+        #threat_time = bot_time if threat_time > (bot_time = evaluation.motion.timeToBall(bot)) for bot in main.their_robots())
+        
+        #Define ratio. TODO: Tune this
+        threshold_ratio = 2.0
+
         #Evaluates the ratio and detirmines if we have enough time to clear
-        return True if not threat_bot bot_time == None and bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
+        return True if bot_time != None and bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
@@ -135,6 +148,9 @@ class SubmissiveDefender(
         #Add relevant skills, some of this this might be bypassed with a tactic
         self.add_subbehavior(skills.capture.Capture(), 'capture', required = True)
 
+    def on_enter_clearing(self):
+        self.add_subbehavior(skills.punt_kick.PuntKick(), 'punt', required = True)
+
     def execute_running(self):
         self.robot.set_avoid_opponents(False)
 
@@ -185,6 +201,9 @@ class SubmissiveDefender(
 
     def on_exit_marking(self):
         self.remove_subbehavior('move')
+
+    def on_exit_retrieving(self):
+        self.remove_subbehavior('capture')
 
     def on_exit_clearing(self):
         print("Implement me!")
