@@ -8,7 +8,8 @@ import robocup
 import main
 from enum import Enum
 import math
-import evaluation.motion
+#import evaluation.motion
+
 
 ## Defender behavior meant to be coordinated in a defense tactic
 # The regular defender does a lot of calculations and figures out where it should be
@@ -43,10 +44,19 @@ class SubmissiveDefender(
         # marking without clearing. As it stands, retrieving and clearing don't
         # need to be seperate, but there could be utility in knowing and reacting
         # to the success of the retrieval.
-        self.add_transition(SubmissiveDefender.State.marking, SubmissiveDefender.State.retrieving, lambda: should_retrieve(), "retrieve")
-        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.clearing, lambda: self.robot.has_ball(), "retrieved-clearing")
-        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.state.marking, lambda: not should_retrieve(), "failed_retrieve")
-        self.add_transition(SubmissiveDefender.State.clearing, SubmissiveDefender.State.marking, lambda: not self.robot.has_ball(), "cleared")
+        self.add_transition(SubmissiveDefender.State.marking,
+                            SubmissiveDefender.State.retrieving,
+                            lambda: should_retrieve(), "retrieve")
+        self.add_transition(SubmissiveDefender.State.retrieving,
+                            SubmissiveDefender.state.clearing,
+                            lambda: self.robot.has_ball(),
+                            "retrieved and clearing")
+        self.add_transition(SubmissiveDefender.State.retrieving,
+                            SubmissiveDefender.state.marking,
+                            lambda: not should_retrieve(), "failed retrieve")
+        self.add_transition(SubmissiveDefender.State.clearing,
+                            SubmissiveDefender.State.marking,
+                            lambda: not self.robot.has_ball(), "cleared")
 
     ## Returns True if the defender should clear a ball. It detirmines this by
     # evaluating the ratio between the estimated time it takes an opponent to reach
@@ -59,18 +69,24 @@ class SubmissiveDefender(
         threat_bot, threat_time = None, float("inf")
         for bot in main.their_robots():
             if bot.visible:
-                bot_time = evaluation.motion.timeToBall(bot)
+                bot_time = (
+                    main.ball.pos() -
+                    bot.pos()).mag()  #evaluation.motion.timeToBall(bot)
                 if bot_time < threat_time:
                     threat_time, threat_bot = bot_time, bot
 
         #Compressed code I was messing with, no idea if it works. Delete before commit.
         #threat_time = bot_time if threat_time > (bot_time = evaluation.motion.timeToBall(bot)) for bot in main.their_robots())
-        
+
         #Define ratio. TODO: Tune this
         threshold_ratio = 2.0
 
         #Evaluates the ratio and detirmines if we have enough time to clear
-        return True if bot_time != None and bot_time / evaluation.motion.timeToBall(self.robot) < threshold_ratio else return False
+        #return True if threat_bot != None and threat_time / evaluation.motion.timeToBall(self.robot) > threshold_ratio else return False
+        return (True if
+                (threat_bot != None and threat_time /
+                 (main.ball.pos() - self.robot.pos()).mag() > threshold_ratio)
+                else False)
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
@@ -146,10 +162,14 @@ class SubmissiveDefender(
     def on_enter_retrieving(self):
         print("Implement me!")
         #Add relevant skills, some of this this might be bypassed with a tactic
-        self.add_subbehavior(skills.capture.Capture(), 'capture', required = True)
+        self.add_subbehavior(skills.capture.Capture(),
+                             'capture',
+                             required=True)
 
     def on_enter_clearing(self):
-        self.add_subbehavior(skills.punt_kick.PuntKick(), 'punt', required = True)
+        self.add_subbehavior(skills.punt_kick.PuntKick(),
+                             'punt',
+                             required=True)
 
     def execute_running(self):
         self.robot.set_avoid_opponents(False)
