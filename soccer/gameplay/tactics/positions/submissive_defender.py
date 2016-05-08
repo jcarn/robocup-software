@@ -46,8 +46,8 @@ class SubmissiveDefender(
         # to the success of the retrieval.
         self.add_transition(SubmissiveDefender.State.marking, SubmissiveDefender.State.retrieving, lambda: self.should_retrieve(), "retrieve")
         self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.State.clearing,lambda: self.subbehavior_with_name('capture').is_done_running(), "retrieved and clearing")
-        self.add_transition(SubmissiveDefender.State.retrieving,SubmissiveDefender.State.marking,lambda: not self.should_retrieve(), "failed retrieve")
-        self.add_transition(SubmissiveDefender.State.clearing,SubmissiveDefender.State.marking,lambda: not self.robot.has_ball(), "cleared")
+        self.add_transition(SubmissiveDefender.State.retrieving,SubmissiveDefender.State.marking,lambda: False, "failed retrieve")
+        self.add_transition(SubmissiveDefender.State.clearing,SubmissiveDefender.State.marking,lambda: self.subbehavior_with_name('punt').is_done_running(), "cleared")
 
     ## Returns True if the defender should clear a ball. It detirmines this by
     # evaluating the ratio between the estimated time it takes an opponent to reach
@@ -148,16 +148,17 @@ class SubmissiveDefender(
     def move_target(self):
         return self._move_target
 
-    def on_enter_marking(self):
-        move = skills.move.Move()
-        self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
-
     def on_enter_retrieving(self):
         print("Retrieve Entered")
         #Add relevant skills, some of this this might be bypassed with a tactic
         capture = skills.capture.Capture()
         capture.dribbler_power = constants.Robot.Dribbler.MaxPower
         self.add_subbehavior(capture,'capture',required=True)
+
+    def on_enter_marking(self):
+        print("marking")
+        move = skills.move.Move()
+        self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
 
     def on_enter_clearing(self):
         print("Clearing entered")
@@ -215,13 +216,17 @@ class SubmissiveDefender(
         self.remove_subbehavior('move')
 
     def on_exit_retrieving(self):
-        print("Retrieve exited")
+        if not self.should_retrieve():
+            print("Failed Retrieve")
+        else: 
+            print("Retrieved")
         self.remove_subbehavior('capture')
 
     def on_exit_clearing(self):
-        print("Implement me!")
+        print("Cleared")
         #Remove skills added earlier
         #Auxilarry: Consider reporting success of clearing?
+        self.remove_subbehavior('punt')
 
     def role_requirements(self):
         reqs = super().role_requirements()
