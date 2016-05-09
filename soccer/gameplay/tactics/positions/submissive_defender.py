@@ -46,7 +46,7 @@ class SubmissiveDefender(
         # to the success of the retrieval.
         self.add_transition(SubmissiveDefender.State.marking, SubmissiveDefender.State.retrieving, lambda: self.should_retrieve(), "retrieve")
         self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.State.clearing,lambda: self.subbehavior_with_name('capture').is_done_running(), "retrieved and clearing")
-        self.add_transition(SubmissiveDefender.State.retrieving,SubmissiveDefender.State.marking,lambda: False, "failed retrieve")
+        self.add_transition(SubmissiveDefender.State.retrieving, SubmissiveDefender.State.marking,lambda: not self.should_retrieve(), "please")#True in ((bot.pos - main.ball().pos).mag() < .1 for bot in main.their_robots()), "failed retrieve")
         self.add_transition(SubmissiveDefender.State.clearing,SubmissiveDefender.State.marking,lambda: self.subbehavior_with_name('punt').is_done_running(), "cleared")
 
     ## Returns True if the defender should clear a ball. It detirmines this by
@@ -68,18 +68,12 @@ class SubmissiveDefender(
                 if opp_time < threat_time:
                     threat_time, threat_bot = opp_time, opp
 
-        #Compressed code I was messing with, no idea if it works. Delete before commit.
-        #threat_time = bot_time if threat_time > (bot_time = evaluation.motion.timeToBall(bot)) for bot in main.their_robots())
-
         #Define ratio. TODO: Tune this
         threshold_ratio = 2.0
 
         #Evaluates the ratio and detirmines if we have enough time to clear
         #return True if threat_bot != None and threat_time / evaluation.motion.timeToBall(self.robot) > threshold_ratio else return False
-        return (True if
-                (threat_bot != None and threat_time /
-                 (main.ball().pos - self.robot.pos).mag() > threshold_ratio)
-                else False)
+        return (True if (threat_bot != None and threat_time / (main.ball().pos - self.robot.pos).mag() > threshold_ratio) else False)
 
     ## the line we should be on to block
     # The defender assumes that the first endpoint on the line is the source of
@@ -149,22 +143,20 @@ class SubmissiveDefender(
         return self._move_target
 
     def on_enter_retrieving(self):
-        print("Retrieve Entered")
         #Add relevant skills, some of this this might be bypassed with a tactic
+        print("Entere Retrieve")
         capture = skills.capture.Capture()
-        capture.dribbler_power = constants.Robot.Dribbler.MaxPower
-        self.add_subbehavior(capture,'capture',required=True)
+        self.add_subbehavior(capture,'capture',required=False)
 
     def on_enter_marking(self):
-        print("marking")
+        print("Enter Marking")
         move = skills.move.Move()
         self.add_subbehavior(move, 'move', required=False)  # FIXME: priority
 
     def on_enter_clearing(self):
-        print("Clearing entered")
-        self.add_subbehavior(skills.punt_kick.PuntKick(),
-                             'punt',
-                             required=True)
+        print("Enter Clearing")
+        punt = skills.punt_kick.PuntKick()
+        self.add_subbehavior(punt,'punt',required=False)
 
     def execute_retrieving(self):
         self.robot.shield_from_teammates(constants.Robot.Radius * 5.0)
@@ -172,9 +164,9 @@ class SubmissiveDefender(
     def execute_clearing(self):
         self.robot.shield_from_teammates(constants.Robot.Radius * 2.0)
 
-
     def execute_running(self):
         self.robot.set_avoid_opponents(False)
+
 
     ## move to a position to block the 'block_line'
     # if no block_line is specified, blocks the ball
@@ -216,14 +208,10 @@ class SubmissiveDefender(
         self.remove_subbehavior('move')
 
     def on_exit_retrieving(self):
-        if not self.should_retrieve():
-            print("Failed Retrieve")
-        else: 
-            print("Retrieved")
         self.remove_subbehavior('capture')
+        print(str(self.robot.has_ball()))
 
     def on_exit_clearing(self):
-        print("Cleared")
         #Remove skills added earlier
         #Auxilarry: Consider reporting success of clearing?
         self.remove_subbehavior('punt')

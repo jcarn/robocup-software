@@ -18,7 +18,6 @@ class PuntKick(single_robot_composite_behavior.SingleRobotCompositeBehavior):
 
     def __init__(self):
         super().__init__(continuous = True)
-
         self.add_state(PuntKick.State.punting, behavior.Behavior.State.running)
 
         self.add_transition(behavior.Behavior.State.start,
@@ -54,5 +53,4 @@ class PuntKick(single_robot_composite_behavior.SingleRobotCompositeBehavior):
         self.add_subbehavior(kicker, 'kick', required=False)
 
     def on_exit_punting(self):
-        print("Punted")
-        self.remove_subbehavior_with_name('kick')
+        self.remove_subbehavior('kick')
