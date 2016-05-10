@@ -6,35 +6,25 @@ import math
 max_speed = robocup.MotionContraints.MaxRobotSpeed.value()
 max_accel = robocup.MotionContraints.MaxRobotAccel.value()
 
-## Returns the minimum time to reach the given point for the given robot.
-# This assumes that the robot doesn't slow down to reach the point, that it doesn't need to avoid any obstacles, and it follows our motion constraints
-def timeToPoint(cur_robot = None, cur_velocity = None, cur_pos = None, final_point):
-	if cur_robot == None and (cur_velocity == None or cur_pos = None):
+# Returns the minimum time to reach the given point for the given robot. 
+def timeToPoint(cur_robot, cur_velocity, cur_pos, final_point):
+	#Checks to make the time can be calculated. You need either a robot or a current velocity and posistion. You always needa final point to calculate the time to.
+	if (cur_robot == None and (cur_velocity == None or cur_pos = None)) or final_point == None:
 		return float("inf")
 	elif not cur_robot == None:
 		cur_velocity = cur_robot.vel
 		cur_pos = cur_robot.pos
-	#Distance from robot to evaluation point
-	path_dist = cur_pos.distTo(final_point)
-	#Time til max velocity is reached
-	max_v_time = (max_speed - cur_velocity.mag()) / max_accel
-	#Distance covered while the robot accelerates to max velocity
-	max_v_dist = .5 * max_robot_accel * max_v_time^2 + cur_robot.vel.mag() * max_v_time
-	#If the robot can reach the point entirely 
-	if path_dist < max_v_dist:
-		#Return time based on the equation: x(t) = .5*a*t^2 + vi*t + xi
-		return (-cur_robot.vel.mag() + math.sqrt(cur_robot.vel.magsq() + 2 * max_robot_accel * path_dist)) / max_robot_accel
-	else:
-		return max_v_time + (path_dist - max_v_dist) / max_robot_speed
+	path = final_point - cur_pos
+	#Projection of our velocity onto the path, giving us a vector representing our veloicty towards the final point.
+	proj_vel = path.dot(cur_velocity) / path.magsq() * path
+	return (-1*proj_vel.mag() + math.sqrt(proj_vel.magsq() + 2 * max_accel * path.mag()) / max_accel
 
 
-## Returns the minimum time to reach the ball for the given robot. 
-# This assumes the robot does not slow down to retrieve the ball. It also
-# assumes that the robot is on of ours, following our max acceleration and velocity values.
-# In addition, it assumes the ball will continue along its current path.
-def timeToBall(cur_robot):
-	if cur_robot == None:
+# Returns the minimum time to reach a moving object for the given robot. This uses the timeToPoint method above, but passes it the relative velocity of the robot to the moving point. The point could be the ball, or another robot.
+def timeToMovingPoint(cur_robot, moving_point_vel, moving_point_pos):
+	#All parameters are necesarry, can't calculate without them
+	if cur_robot == None or moving_point_vel == None or moving_point_pos == None:
 		return float("inf")
-	robot_vel = cur_robot.vel
-	ball_vel = robocup.main.vel
+	#We don't give it the robot because we want it to use our relative velocity instead of the robot's actual velocity
+	timeToPoint(None, (cur_robot.vel - moving_point_vel), cur_robot.pos, moving_point_pos)
 
