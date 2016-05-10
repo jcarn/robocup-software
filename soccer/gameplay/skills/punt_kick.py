@@ -17,7 +17,7 @@ class PuntKick(single_robot_composite_behavior.SingleRobotCompositeBehavior):
         punting = 1
 
     def __init__(self):
-        super().__init__(continuous = True)
+        super().__init__(continuous = False)
         self.add_state(PuntKick.State.punting, behavior.Behavior.State.running)
 
         self.add_transition(behavior.Behavior.State.start,
