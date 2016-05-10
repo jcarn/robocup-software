@@ -3,18 +3,21 @@ import robocup
 import constants
 import math
 
-max_robot_speed = robocup.MotionContraints.MaxRobotSpeed.value()
-max_robot_accel = robocup.MotionContraints.MaxRobotAccel.value()
+max_speed = robocup.MotionContraints.MaxRobotSpeed.value()
+max_accel = robocup.MotionContraints.MaxRobotAccel.value()
 
 ## Returns the minimum time to reach the given point for the given robot.
 # This assumes that the robot doesn't slow down to reach the point, that it doesn't need to avoid any obstacles, and it follows our motion constraints
-def timeToPoint(cur_velocity, final_point):
-	if cur_robot == None
+def timeToPoint(cur_robot = None, cur_velocity = None, cur_pos = None, final_point):
+	if cur_robot == None and (cur_velocity == None or cur_pos = None):
 		return float("inf")
+	elif not cur_robot == None:
+		cur_velocity = cur_robot.vel
+		cur_pos = cur_robot.pos
 	#Distance from robot to evaluation point
-	path_dist = cur_robot.pos.distTo(final_point)
+	path_dist = cur_pos.distTo(final_point)
 	#Time til max velocity is reached
-	max_v_time = (max_robot_speed - cur_robot.vel.mag()) / max_robot_accel
+	max_v_time = (max_speed - cur_velocity.mag()) / max_accel
 	#Distance covered while the robot accelerates to max velocity
 	max_v_dist = .5 * max_robot_accel * max_v_time^2 + cur_robot.vel.mag() * max_v_time
 	#If the robot can reach the point entirely 
