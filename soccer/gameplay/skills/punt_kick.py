@@ -46,10 +46,10 @@ class PuntKick(single_robot_composite_behavior.SingleRobotCompositeBehavior):
 
         # We use very loose thresholds since our goal is to quickly get rid of the ball
         # TODO: Tune me
-        # kicker.aim_params['error_threshold'] = 0.6
-        # kicker.aim_params['max_steady_ang_vel'] = 9.0
-        # kicker.aim_params['min_steady_duration'] = 0.5
-        # kicker.aim_params['desperate_timeout'] = 6.0
+        kicker.aim_params['error_threshold'] = 1.0
+        kicker.aim_params['max_steady_ang_vel'] = 20.0
+        kicker.aim_params['min_steady_duration'] = 0.3
+        kicker.aim_params['desperate_timeout'] = 6.0
         self.add_subbehavior(kicker, 'kick', required=False)
 
     def on_exit_punting(self):
